@@ -1,35 +1,36 @@
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 
-// Tu configuración de Firebase del proyecto en la web
-// Ve a tu Proyecto -> Configuración del proyecto -> Tus apps -> SDK de Firebase
+// Lee las claves desde las variables de entorno
 const firebaseConfig = {
-  apiKey: "AIzaSyDPhwayltG_FtxPBgNKoimpaaYjfkbG_eI",
-  authDomain: "laundry-san-juan-2024.firebaseapp.com",
-  projectId: "laundry-san-juan-2024",
-  storageBucket: "laundry-san-juan-2024.firebasestorage.app",
-  messagingSenderId: "769015378298",
-  appId: "1:769015378298:web:07277aa2c69524f9fee6c3",
-  measurementId: "G-WQTZFYNY1B"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Inicializar Firebase
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+// Inicializa Firebase de forma segura
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
+const auth = getAuth(app);
 const db = getFirestore(app);
 const functions = getFunctions(app);
 
-// Conectar a los EMULADORES solo en entorno de DESARROLLO
+// Conecta a los emuladores solo en el entorno de desarrollo local
 if (process.env.NODE_ENV === "development") {
-  console.log("Entorno de desarrollo: Conectando a los Emuladores de Firebase...");
   try {
+    connectAuthEmulator(auth, "http://localhost:9099");
     connectFirestoreEmulator(db, 'localhost', 8080);
     connectFunctionsEmulator(functions, 'localhost', 5001);
-    console.log("Conectado a Firestore y Functions emulators.");
+    console.log("Conectado a los Emuladores de Firebase.");
   } catch (error) {
     console.error("Error conectando a los emuladores:", error);
   }
 }
 
-export { app, db, functions };
+export { app, auth, db, functions };
