@@ -19,7 +19,7 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 const auth = getAuth(app);
 const db = getFirestore(app);
-const functions = getFunctions(app, 'us-central1'); // Especifica la región de las funciones
+const functions = getFunctions(app, 'southamerica-east1'); // Especifica la región de las funciones
 
 // Conecta a los emuladores solo en el entorno de desarrollo local
 if (process.env.NODE_ENV === "development") {
